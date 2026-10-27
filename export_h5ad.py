@@ -12,6 +12,7 @@ from pathlib import Path
 
 import anndata as ad
 import mantispy as mt
+from mantispy._core.features import load_blocklist  # ponytail: private, no public accessor yet
 import numpy as np
 import pandas as pd
 import zarr
@@ -75,7 +76,9 @@ def run_mantispy(img: ad.AnnData) -> None:
     mt.pp.calculate_qc_metrics(img)
     # one plate, so TNFa stays in X; per-well normalisation would erase it, since condition is confounded with well
     mt.pp.normalize(img, by="Metadata_Plate", reference="negcon", keep_raw=True)
-    mt.pp.feature_select(img)
+    # IgG isotype controls and background aren't biology, so keep them out of var["selected"]
+    not_biology = img.var_names[img.var["modality"].isin(["control", "background"])]
+    mt.pp.feature_select(img, blocklist=[*load_blocklist(), *not_biology])
     mt.pp.outliers(img, contamination=0.01, by="Metadata_Well")
     obs = img.obs
     obs["qc_pass"] = obs["qc_pass"] & ~obs["qc_outlier"] & ~obs[OUR_FLAGS].any(axis=1)

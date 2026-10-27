@@ -18,7 +18,7 @@ Element Biosciences published the [original data](https://www.elementbiosciences
 | `imaging.h5ad` | 1,131 cell painting, protein and shape features | 1.6 GB |
 | `guides.h5ad` | Guide counts for 28 guides | 0.04 GB |
 | `subset_A1_A2.zarr.zip` | Wells A1 and A2 with images, masks and transcript locations (SpatialData) | 17 GB |
-| `full.zarr.zip` | All 12 wells with images, masks and transcript locations (SpatialData) | 104 GB |
+| `full_<well>.zarr.zip` | One file per well (`full_A1` to `full_F2`) with images, masks and transcript locations (SpatialData). Uploading, not yet available. | about 9 GB each |
 
 Most analyses only need the three `.h5ad` files. You only need the zarr files if you want to work with the images.
 
@@ -26,9 +26,9 @@ Most analyses only need the three `.h5ad` files. You only need the zarr files if
 URL=https://exampledata.scverse.org/sbi2-cytodata/multiomics
 for f in rna.h5ad imaging.h5ad guides.h5ad; do curl -O $URL/$f; done
 shasum -a 256 -c <<EOF
-6bcaf34969e6277c3b1ba334520dbc4a627da1b291d8ee64b304d43b53e59e7a  rna.h5ad
-0d922ae40fad54226f26af4a4cd3f9d62adff56461c338adac4a4e0cca7d48f0  imaging.h5ad
-5c0b0bdaefee317fe52541aa9213b0c93a96cf8678dc538448ca536460556feb  guides.h5ad
+983b74f8a7f9a70b4dfdc1cc4cbc54168dd2c8b36099724bfb740b331f66d984  rna.h5ad
+8be68212c1f710095e7f0400c28a76abf4a5465c6715d6d9856c9ebf76db8cc1  imaging.h5ad
+1dd75ee3c80931b3e35698ffddad419915aa14275f9fac91838e3bf56c26d093  guides.h5ad
 EOF
 ```
 
@@ -43,7 +43,13 @@ guides = ad.read_h5ad("guides.h5ad")
 cells = rna.obs["qc_pass"].values  # the same rows in all three files
 ```
 
-The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, and builds a first joint embedding. It runs on a laptop in about 3 minutes and needs less than 4 GB of memory. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
+The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, builds a first joint embedding, and scores each representation on how well it separates TNFα-treated cells and each knockout from the non-targeting cells. It runs on a laptop in about 3 minutes and needs less than 4 GB of memory. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
+
+To run the notebook, install the packages it uses:
+
+```bash
+pip install anndata scanpy scikit-learn matplotlib "mantispy[map]>=0.1.0a1"
+```
 
 ## Contents of the h5ad files
 
@@ -54,7 +60,7 @@ The three files share the same rows and the same `obs`, and we didn't remove any
 - The QC flags, which are true for cells with a problem: `qc_low_rna` (fewer than 200 RNA counts), `qc_guide_unassigned`, `qc_spatial_artifact`, `qc_imaging_nan`, `qc_no_nucleus`, and mantispy's `qc_area_outlier` and `qc_outlier`
 - `qc_pass`, which is true when none of the QC flags is set. 79.6% of cells pass.
 
-We processed `imaging.h5ad` with [mantispy](https://github.com/scverse/mantispy). `X` holds robust z-scores against all non-targeting cells, the raw values are in `layers["raw"]`, and `var["selected"]` marks the 465 features that mantispy's feature selection kept. `var["modality"]` says whether a feature comes from cell painting, protein, cell shape, the IgG controls or the background. The zarr files hold Element's tables with an earlier QC flag, `pass_qc`, which doesn't exclude mantispy's outliers.
+We processed `imaging.h5ad` with [mantispy](https://github.com/scverse/mantispy). `X` holds robust z-scores against all non-targeting cells, the raw values are in `layers["raw"]`, and `var["selected"]` marks the 369 features that mantispy's feature selection kept, leaving out the IgG controls and the background. `var["modality"]` says whether a feature comes from cell painting, protein, cell shape, the IgG controls or the background. The zarr files hold Element's tables with an earlier QC flag, `pass_qc`, which doesn't exclude mantispy's outliers.
 
 ## Checks on the biology
 
@@ -77,6 +83,7 @@ Wnt signalling is low in A549 cells, so the CTNNB1 and GSK3B knockouts have litt
 ```bash
 uv sync --group prep
 python prep.py Cytos-MPS_TNFa-CRISPR-Screen.zarr out
+pip install "mantispy @ git+https://github.com/scverse/mantispy.git@3552713"  # the version the h5ad files were made with
 python export_h5ad.py out/tables.zarr out/h5ad
 python checks/biology.py out/tables.zarr
 ```

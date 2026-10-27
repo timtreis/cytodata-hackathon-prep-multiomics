@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
   "anndata",
   "matplotlib",
+  "mantispy[map]>=0.1.0a1",
   "pytest",
   "scanpy",
   "scikit-learn",
@@ -15,4 +16,4 @@ dependencies = [
 package = false
 
 [dependency-groups]
-prep = ["mantispy @ git+https://github.com/scverse/mantispy.git@355271383c97"]
+prep = ["nbconvert", "ipykernel"]
