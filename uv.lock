@@ -14,6 +14,20 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "adjusttext"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b5/5c/496e506ad3313664df24a79f801719cadcd62af5999fcb299c9b08ff0d4b/adjusttext-1.4.0.tar.gz", hash = "sha256:1f73860ced8cccce3f85ee6989ca133c2579b67a7453f63dbeb38f39bf123154", size = 15852, upload-time = "2026-06-08T16:48:32.726Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/2c/897bdd17b05724c894a5b831c6b2e9853adcc2d07a70d6246c0cd5cd3912/adjusttext-1.4.0-py3-none-any.whl", hash = "sha256:6febd6484c0d45c39a22f44b2c1f4a8cd01ef58fada565cab4b629c771df79b5", size = 13262, upload-time = "2026-06-08T16:48:31.765Z" },
+]
+
+[[package]]
 name = "aiobotocore"
 version = "3.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -559,7 +573,13 @@ dependencies = [
     { name = "matplotlib" },
     { name = "pytest" },
     { name = "scanpy" },
+    { name = "scikit-learn" },
     { name = "spatialdata" },
+]
+
+[package.dev-dependencies]
+prep = [
+    { name = "mantispy" },
 ]
 
 [package.metadata]
@@ -568,8 +588,12 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "pytest" },
     { name = "scanpy" },
+    { name = "scikit-learn" },
     { name = "spatialdata", specifier = ">=0.7.2" },
 ]
+
+[package.metadata.requires-dev]
+prep = [{ name = "mantispy", git = "https://github.com/scverse/mantispy.git?rev=355271383c97" }]
 
 [[package]]
 name = "dask"
@@ -634,6 +658,26 @@ wheels = [
 ]
 
 [[package]]
+name = "decoupler"
+version = "2.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "adjusttext" },
+    { name = "anndata" },
+    { name = "docrep" },
+    { name = "marsilea" },
+    { name = "numba" },
+    { name = "requests" },
+    { name = "scipy" },
+    { name = "session-info2" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b8/e4/4a9cd934a075216b1e4cce87387b639cc6bbcfd1e06725a07074e0c2c098/decoupler-2.3.1.tar.gz", hash = "sha256:24080418a1c44c001761b277559b2b9a1029a65a9b27021df0e6cf807e65cd55", size = 942840, upload-time = "2026-10-26T20:54:26.51Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/51/98066921272f894d981b826ae89a8c6c0c6c87414914a077e9963f24ed33/decoupler-2.3.1-py3-none-any.whl", hash = "sha256:8e374dc75881d250e3905d717e33ecf11fd6482980524dfbb8e032091abc8516", size = 135675, upload-time = "2026-10-26T20:54:24.83Z" },
+]
+
+[[package]]
 name = "deprecated"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -669,6 +713,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/ff/18/1c98f0a36eccfcce1
 wheels = [
     { url = "https://files.pythonhosted.org/packages/28/d4/017e2d39d797eaa38a52b4459c8bea875d5e0ada335a62aafe98193041a6/distributed-2026.8.0-py3-none-any.whl", hash = "sha256:3bd8882861a2cf497453f28c6b61135fa8ef2bb1d6885ad3b9f27e887e9c0e01", size = 1008640, upload-time = "2026-08-24T19:35:58.622Z" },
 ]
+
+[[package]]
+name = "docrep"
+version = "0.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/44/8e/250fab1cafeea43f4eb11f1d64cd6313f639965ff62cb0d9da3883655781/docrep-0.3.2.tar.gz", hash = "sha256:ed8a17e201abd829ef8da78a0b6f4d51fb99a4cbd0554adbed3309297f964314", size = 33197, upload-time = "2021-02-16T09:01:50.183Z" }
 
 [[package]]
 name = "donfig"
@@ -1177,6 +1230,18 @@ wheels = [
 ]
 
 [[package]]
+name = "legendkit"
+version = "0.5.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8f/29/a788c90ff1200444b487679507e93e5ad0c07783d34d93e1139ffc2d653a/legendkit-0.5.2.tar.gz", hash = "sha256:cb4f4c11f678b2af25f037a675c1f21120f7d160efb6f52ce1378a1906ef159c", size = 28802, upload-time = "2026-08-27T11:25:09.763Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/46/5b510d4452c1ba3c3935090263df7aad3367367a715a98806100d61b758a/legendkit-0.5.2-py3-none-any.whl", hash = "sha256:b3c547a1b84256e26d054740eac2fdafe128a1c8dd6bbbf363dbe3c2c2ba2f89", size = 32920, upload-time = "2026-08-27T11:25:08.749Z" },
+]
+
+[[package]]
 name = "llvmlite"
 version = "0.50.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1218,6 +1283,27 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/2f/83/97b29fe05cb6ae28d2dbd30b81e2e402a3eed5f460c26e9eaa5895ceacf5/locket-1.0.0.tar.gz", hash = "sha256:5c0d4c052a8bbbf750e056a8e65ccd309086f4f0f18a2eac306a8dfa4112a632", size = 4350, upload-time = "2022-04-20T22:04:44.312Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/db/bc/83e112abc66cd466c6b83f99118035867cecd41802f8d044638aa78a106e/locket-1.0.0-py2.py3-none-any.whl", hash = "sha256:b6c819a722f7b6bd955b80781788e4a66a55628b858d347536b7e81325a3a5e3", size = 4398, upload-time = "2022-04-20T22:04:42.23Z" },
+]
+
+[[package]]
+name = "mantispy"
+version = "0.1.0a2.dev4+g3552713"
+source = { git = "https://github.com/scverse/mantispy.git?rev=355271383c97#355271383c9778776083ca8804e305c267280a57" }
+dependencies = [
+    { name = "anndata" },
+    { name = "decoupler" },
+    { name = "matplotlib" },
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "platformdirs" },
+    { name = "pooch" },
+    { name = "pyarrow" },
+    { name = "scanpy" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "scverse-misc", extra = ["datasets"] },
+    { name = "session-info2" },
 ]
 
 [[package]]
@@ -1343,6 +1429,24 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/81/99/157e10966b033b363aeda5263e82596ee232a0b1d082fdbf90aa417ff083/markupsafe-3.0.4-cp315-cp315t-win32.whl", hash = "sha256:e49fb0d1ce92cfa0cb198cc5b1b11cdf9d0638658e2a2db2687e39db7c87fc78", size = 14300, upload-time = "2026-10-02T23:06:53.241Z" },
     { url = "https://files.pythonhosted.org/packages/33/05/55884815414c9706a23deca150b72c25a62109e65b0b6ce232077802c719/markupsafe-3.0.4-cp315-cp315t-win_amd64.whl", hash = "sha256:4f6e0852a0283b1b1fd776eeb7b766a5f440b3e2bd31ab51af3b400585f3965c", size = 14522, upload-time = "2026-10-02T23:06:54.729Z" },
     { url = "https://files.pythonhosted.org/packages/92/f9/ecbde7149e95b8a0f18e16d5d747f7dc06049d5da2e4f77f6f5e4a1f46a8/markupsafe-3.0.4-cp315-cp315t-win_arm64.whl", hash = "sha256:39dbacefc411633db5b4378b066a9aca70a3d7e2922c9e578d825f844026eeba", size = 14417, upload-time = "2026-10-02T23:06:56.246Z" },
+]
+
+[[package]]
+name = "marsilea"
+version = "0.8.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "legendkit" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas", extra = ["parquet"] },
+    { name = "platformdirs" },
+    { name = "scipy" },
+    { name = "seaborn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/7d/9f363524e27b64c185c3f0a2d510e386980affdde56a8a37ba3992ac5554/marsilea-0.8.1.tar.gz", hash = "sha256:9c717bbad18183e78bf912669b6743dfa4cfaa772687578b69af7d777dd53a61", size = 110502, upload-time = "2026-08-21T06:46:30.62Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/e0/f0ca9b23581803ca7f67a56b48e5f40e9dfeb6df3f6260cfc74012be3169/marsilea-0.8.1-py3-none-any.whl", hash = "sha256:5a941b5d5fd293af664b7807f399b6b72db7a6fcd40eea315aadd6f6b5753a91", size = 123916, upload-time = "2026-08-21T06:46:29.34Z" },
 ]
 
 [[package]]
@@ -2014,6 +2118,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/92/f5/9d753d85c4ea85b6d1c3735496ae5b416d7ef6905f1845c70e9521d124d9/pandas-3.1.0-cp315-cp315t-musllinux_1_2_x86_64.whl", hash = "sha256:dde9a55ecd3c4f9100ac50ab15e852e4c54fcf372d800e4495e0b2159a0122ab", size = 12916085, upload-time = "2026-10-22T11:56:56.084Z" },
     { url = "https://files.pythonhosted.org/packages/e6/f9/4a6965677477dbbb19f8881befb01b67eb6009809db73f7f1b7a0132faf1/pandas-3.1.0-cp315-cp315t-win_amd64.whl", hash = "sha256:3fe234bfb9999552dc54c45851752e56e163218d7663897dca950b4a7c32af39", size = 11267097, upload-time = "2026-10-22T11:56:58.479Z" },
     { url = "https://files.pythonhosted.org/packages/99/35/e60fd8228db4eb848802988dbc6e3a0f1a81c57f06ad95ebe4cd534fa655/pandas-3.1.0-cp315-cp315t-win_arm64.whl", hash = "sha256:f1a93c24175129bfc9922ef748ddae1d8137c743ed835e2615be329f606fed4d", size = 10597861, upload-time = "2026-10-22T11:57:00.776Z" },
+]
+
+[package.optional-dependencies]
+parquet = [
+    { name = "pyarrow" },
 ]
 
 [[package]]
@@ -2984,6 +3093,12 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+datasets = [
+    { name = "anndata" },
+    { name = "pooch" },
+    { name = "pyyaml" },
+    { name = "tqdm" },
+]
 settings = [
     { name = "pydantic-settings" },
     { name = "python-dotenv" },

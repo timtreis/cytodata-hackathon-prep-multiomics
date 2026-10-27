@@ -7,8 +7,12 @@ dependencies = [
   "matplotlib",
   "pytest",
   "scanpy",
+  "scikit-learn",
   "spatialdata>=0.7.2",
 ]
 
 [tool.uv]
 package = false
+
+[dependency-groups]
+prep = ["mantispy @ git+https://github.com/scverse/mantispy.git@355271383c97"]
