@@ -1,0 +1,9 @@
+CLAUDE.local.md
+.remember/
+tasks/
+data/
+*.zarr
+*.zarr.zip
+*.h5ad
+.venv/
+__pycache__/
