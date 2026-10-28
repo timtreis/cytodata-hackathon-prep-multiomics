@@ -32,6 +32,23 @@ shasum -a 256 -c <<EOF
 EOF
 ```
 
+Or in Python, with pooch, which also checks each file against its checksum:
+
+```python
+import pooch
+
+URL = "https://exampledata.scverse.org/sbi2-cytodata/multiomics"
+SHA256 = {
+    "rna.h5ad": "983b74f8a7f9a70b4dfdc1cc4cbc54168dd2c8b36099724bfb740b331f66d984",
+    "imaging.h5ad": "8be68212c1f710095e7f0400c28a76abf4a5465c6715d6d9856c9ebf76db8cc1",
+    "guides.h5ad": "1dd75ee3c80931b3e35698ffddad419915aa14275f9fac91838e3bf56c26d093",
+}
+for name, sha in SHA256.items():
+    pooch.retrieve(f"{URL}/{name}", known_hash=f"sha256:{sha}", fname=name, path="data")
+```
+
+The CDN blocks the default user agent of Python's urllib, so use curl, wget, requests or pooch instead.
+
 The zarr files are at the same URL, e.g. `curl -O $URL/full_B2.zarr.zip` for well B2. Their sha256 checksums are:
 
 ```
@@ -64,7 +81,7 @@ The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the mo
 To run the notebook, install the packages it uses:
 
 ```bash
-pip install anndata scanpy scikit-learn matplotlib "mantispy[map]>=0.1.0a1"
+pip install anndata scanpy scikit-learn matplotlib pooch "mantispy[map]>=0.1.0a1"
 ```
 
 ## Contents of the h5ad files

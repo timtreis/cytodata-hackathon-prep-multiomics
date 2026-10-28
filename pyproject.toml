@@ -6,6 +6,7 @@ dependencies = [
   "anndata",
   "matplotlib",
   "mantispy[map]>=0.1.0a1",
+  "pooch",
   "pytest",
   "scanpy",
   "scikit-learn",
