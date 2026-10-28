@@ -18,7 +18,7 @@ Element Biosciences published the [original data](https://www.elementbiosciences
 | `imaging.h5ad` | 1,131 cell painting, protein and shape features | 1.6 GB |
 | `guides.h5ad` | Guide counts for 28 guides | 0.04 GB |
 | `subset_A1_A2.zarr.zip` | Wells A1 and A2 with images, masks and transcript locations (SpatialData) | 17 GB |
-| `full_<well>.zarr.zip` | One file per well (`full_A1` to `full_F2`) with images, masks and transcript locations (SpatialData). Uploading, not yet available. | about 9 GB each |
+| `full_<well>.zarr.zip` | One file per well (`full_A1` to `full_F2`) with images, masks and transcript locations (SpatialData) | 8.8 to 9.6 GB each |
 
 Most analyses only need the three `.h5ad` files. You only need the zarr files if you want to work with the images.
 
@@ -32,7 +32,23 @@ shasum -a 256 -c <<EOF
 EOF
 ```
 
-The zarr files are at the same URL, e.g. `$URL/subset_A1_A2.zarr.zip`.
+The zarr files are at the same URL, e.g. `curl -O $URL/full_B2.zarr.zip` for well B2. Their sha256 checksums are:
+
+```
+bfa0442ec3183fc379f711a89f65487c10d96119340a92fb184180c539280317  subset_A1_A2.zarr.zip
+16ff5051e595b9d96891b9efd05d8a5e1942b090d5b8710ca87226417adff1da  full_A1.zarr.zip
+9a32b79ea46a7db2caeb66940a12ed909aed62d59f1c785c0db1b4460f7b75b0  full_A2.zarr.zip
+287d91d0fd7a00fe8ba92395cea902332fbba1bb96889659b45a46f18a24f80e  full_B1.zarr.zip
+001c757a4946eda97bede539c616e8241853cdbde82889653591ca2db94707be  full_B2.zarr.zip
+3839173bc68be210869c4179f090f62c4da986b3d81d05ea63d123b80ccc74d9  full_C1.zarr.zip
+93a2bedf5a4d5a295798be9b932df39924a454dd25374c5291c2586b537e0567  full_C2.zarr.zip
+21cc889de09b6d56dfeac8bf98bbbae3e0bb7ccff927676c0bb9a31dddf63a39  full_D1.zarr.zip
+3ab0fd284ce8d70f075913995b142694648a9f817ff8a9a8a0e5bbf392523b50  full_D2.zarr.zip
+52ee000ba873b506b4ce35685300626e00d13b1865d5ee900d51fb64629c12c4  full_E1.zarr.zip
+add56e9d6a7ee2b8b8cd7da34c1ad7aa872462a1f58eb492efc14d1cc1b5ccea  full_E2.zarr.zip
+87c2ac200b341ef6fe38f94e3d208292a726671d65fd4419502ab021b6848f85  full_F1.zarr.zip
+e06676e7b8d054e2afb132cf579d4251e4abf7cebc34ae3838bdf5fdbba77fff  full_F2.zarr.zip
+```
 
 ```python
 import anndata as ad
@@ -85,5 +101,6 @@ uv sync --group prep
 python prep.py Cytos-MPS_TNFa-CRISPR-Screen.zarr out
 pip install "mantispy @ git+https://github.com/scverse/mantispy.git@3552713"  # the version the h5ad files were made with
 python export_h5ad.py out/tables.zarr out/h5ad
+python split_wells.py out/full.zarr out/wells
 python checks/biology.py out/tables.zarr
 ```
