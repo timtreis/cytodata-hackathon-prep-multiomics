@@ -3,8 +3,8 @@
 Usage: python prep.py <unzipped .zarr> <out dir>
 
 - annotates the full zarr in place (QC flags + guide/condition columns on every cell table,
-  cell line corrected to A549); the original download stays untouched as the .zip
-- <out>/tables.zarr: tables only (laptop tier)
+  cell line corrected to A549)
+- <out>/tables.zarr: tables only, the input to export_h5ad.py
 - <out>/subset_A1_A2.zarr: one baseline + one TNFa well with images and labels
 - <out>/qc/: summary plots
 """
