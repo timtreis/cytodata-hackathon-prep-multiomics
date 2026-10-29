@@ -4,7 +4,7 @@ Usage: python export_h5ad.py <tables.zarr> <out dir>
 
 Writes rna.h5ad, imaging.h5ad and guides.h5ad. Needs the `prep` dependency group (mantispy).
 The imaging features go through mantispy's single-cell workflow: QC metrics, normalisation against
-the NTC cells of the plate, feature selection and outlier flags. mantispy's qc_pass combines every QC flag.
+the NTC cells of the plate, feature selection and outlier flags. mantispy's qc_fail combines every QC flag.
 """
 
 import sys
@@ -81,7 +81,7 @@ def run_mantispy(img: ad.AnnData) -> None:
     mt.pp.feature_select(img, blocklist=[*load_blocklist(), *not_biology])
     mt.pp.outliers(img, contamination=0.01, by="Metadata_Well")
     obs = img.obs
-    obs["qc_pass"] = obs["qc_pass"] & ~obs["qc_outlier"] & ~obs[OUR_FLAGS].any(axis=1)
+    obs["qc_fail"] = obs["qc_fail"] | obs["qc_outlier"] | obs[OUR_FLAGS].any(axis=1)
 
 
 def main(zarr_path: str, out: str) -> None:
@@ -111,8 +111,8 @@ def main(zarr_path: str, out: str) -> None:
 
     for f in sorted(out.glob("*.h5ad")):
         print(f"{f.name}  {f.stat().st_size / 1e9:.2f} GB")
-    flags = [c for c in shared if c.startswith("qc_") and shared[c].dtype == bool and c != "qc_pass"]
-    print(shared[[*flags, "qc_pass"]].mean().round(4).to_string())
+    flags = [c for c in shared if c.startswith("qc_") and shared[c].dtype == bool]
+    print(shared[flags].mean().round(4).to_string())
     print("selected imaging features:", int(img.var["selected"].sum()), "of", img.n_vars)
 
 

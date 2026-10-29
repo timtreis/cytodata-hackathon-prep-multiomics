@@ -745,7 +745,7 @@ prep = [
 [package.metadata]
 requires-dist = [
     { name = "anndata" },
-    { name = "mantispy", extras = ["map"], specifier = ">=0.1.0a1" },
+    { name = "mantispy", extras = ["map"], specifier = ">=0.1.0a2" },
     { name = "matplotlib" },
     { name = "pooch" },
     { name = "pytest" },
@@ -1653,7 +1653,7 @@ wheels = [
 
 [[package]]
 name = "mantispy"
-version = "0.1.0a1"
+version = "0.1.0a2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anndata" },
@@ -1665,15 +1665,16 @@ dependencies = [
     { name = "platformdirs" },
     { name = "pooch" },
     { name = "pyarrow" },
+    { name = "pynndescent" },
     { name = "scanpy" },
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "scverse-misc", extra = ["datasets"] },
     { name = "session-info2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/15/b8/9101b5659de8906f9db541d94d2db1511067290d9deaea288807b36b68dd/mantispy-0.1.0a1.tar.gz", hash = "sha256:1d7dbde2a2477052c280e24b2a2a4306e1594025b4add1e01b3be8843b5e4a2f", size = 420231, upload-time = "2026-10-22T20:26:24.697Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/97/88/451185c1d9c618df69f31fbca78d4b5969476825c05223047383098b58b3/mantispy-0.1.0a2.tar.gz", hash = "sha256:43ec750ab7afe021483c976bfad3c5c5d6414fe000d773dbe369be64c4ee57f3", size = 414681, upload-time = "2026-10-29T01:50:57.015Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/07/89/48e4ab8626e3e142c270d6f2b2627d6d2f0bb34257b874f572e42e801305/mantispy-0.1.0a1-py3-none-any.whl", hash = "sha256:aa52f716fae36b24568c87302c1dac43d9e8daac48d219c4a82d3b047186db51", size = 453534, upload-time = "2026-10-22T20:26:23.016Z" },
+    { url = "https://files.pythonhosted.org/packages/11/c5/04fe77f1e8ae2c17409bc696243398b3f96baca5d6f332f274c045f09eec/mantispy-0.1.0a2-py3-none-any.whl", hash = "sha256:f0c1dc8595dcfd3867619063bcfd229e30be6f420e69cbabe9d3a0da556f1a68", size = 457664, upload-time = "2026-10-29T01:50:55.134Z" },
 ]
 
 [package.optional-dependencies]

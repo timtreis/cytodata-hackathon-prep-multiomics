@@ -26,9 +26,9 @@ Most analyses only need the three `.h5ad` files. You only need the zarr files if
 URL=https://exampledata.scverse.org/sbi2-cytodata/multiomics
 for f in rna.h5ad imaging.h5ad guides.h5ad; do curl -O $URL/$f; done
 shasum -a 256 -c <<EOF
-983b74f8a7f9a70b4dfdc1cc4cbc54168dd2c8b36099724bfb740b331f66d984  rna.h5ad
-8be68212c1f710095e7f0400c28a76abf4a5465c6715d6d9856c9ebf76db8cc1  imaging.h5ad
-1dd75ee3c80931b3e35698ffddad419915aa14275f9fac91838e3bf56c26d093  guides.h5ad
+a570888a00a0a98fd7b47ebace10f576fb04775b44732159ff419a81710bd293  rna.h5ad
+045854ba23a19bccb89615ab215ea9db92bd76050425ee3cdcbd31b115a652b4  imaging.h5ad
+add7668236e6fab989315851c11d578d9db49c935d9b06ea4363c46bd06bc618  guides.h5ad
 EOF
 ```
 
@@ -39,9 +39,9 @@ import pooch
 
 URL = "https://exampledata.scverse.org/sbi2-cytodata/multiomics"
 SHA256 = {
-    "rna.h5ad": "983b74f8a7f9a70b4dfdc1cc4cbc54168dd2c8b36099724bfb740b331f66d984",
-    "imaging.h5ad": "8be68212c1f710095e7f0400c28a76abf4a5465c6715d6d9856c9ebf76db8cc1",
-    "guides.h5ad": "1dd75ee3c80931b3e35698ffddad419915aa14275f9fac91838e3bf56c26d093",
+    "rna.h5ad": "a570888a00a0a98fd7b47ebace10f576fb04775b44732159ff419a81710bd293",
+    "imaging.h5ad": "045854ba23a19bccb89615ab215ea9db92bd76050425ee3cdcbd31b115a652b4",
+    "guides.h5ad": "add7668236e6fab989315851c11d578d9db49c935d9b06ea4363c46bd06bc618",
 }
 for name, sha in SHA256.items():
     pooch.retrieve(f"{URL}/{name}", known_hash=f"sha256:{sha}", fname=name, path="data")
@@ -73,7 +73,7 @@ import anndata as ad
 rna = ad.read_h5ad("rna.h5ad")
 imaging = ad.read_h5ad("imaging.h5ad")
 guides = ad.read_h5ad("guides.h5ad")
-cells = rna.obs["qc_pass"].values  # the same rows in all three files
+cells = ~rna.obs["qc_fail"].values  # the same rows in all three files
 ```
 
 The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, builds a first joint embedding, and scores each representation on how well it separates TNFα-treated cells and each knockout from the non-targeting cells. It runs on a laptop in about 3 minutes and needs less than 4 GB of memory. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
@@ -81,7 +81,7 @@ The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the mo
 To run the notebook, install the packages it uses:
 
 ```bash
-pip install anndata scanpy scikit-learn matplotlib pooch "mantispy[map]>=0.1.0a1"
+pip install anndata scanpy scikit-learn matplotlib pooch "mantispy[map]>=0.1.0a2"
 ```
 
 ## Contents of the h5ad files
@@ -91,9 +91,9 @@ The three files share the same rows and the same `obs`, and we didn't remove any
 - `condition` (`baseline` or `TNFa`), `Well`, `guide`, `target_gene` (`NTC` for non-targeting guides, `Undetermined` when no guide was called) and `guide_confidence`
 - `guide_assigned`, which is true when the guide confidence is above 0.5. With that cutoff, 87% of cells have a guide, which matches Element's number.
 - The QC flags, which are true for cells with a problem: `qc_low_rna` (fewer than 200 RNA counts), `qc_guide_unassigned`, `qc_spatial_artifact`, `qc_imaging_nan`, `qc_no_nucleus`, and mantispy's `qc_area_outlier` and `qc_outlier`
-- `qc_pass`, which is true when none of the QC flags is set. 79.6% of cells pass.
+- `qc_fail`, which is true when any of the QC flags is set. 79.6% of cells pass, and `mt.pp.filter_cells` drops the others.
 
-We processed `imaging.h5ad` with [mantispy](https://github.com/scverse/mantispy). `X` holds robust z-scores against all non-targeting cells, the raw values are in `layers["raw"]`, and `var["selected"]` marks the 369 features that mantispy's feature selection kept, leaving out the IgG controls and the background. `var["modality"]` says whether a feature comes from cell painting, protein, cell shape, the IgG controls or the background. The zarr files hold Element's tables with an earlier QC flag, `pass_qc`, which doesn't exclude mantispy's outliers.
+We processed `imaging.h5ad` with [mantispy](https://github.com/scverse/mantispy). `X` holds robust z-scores against all non-targeting cells, the raw values are in `layers["raw"]`, and `var["selected"]` marks the 369 features that mantispy's feature selection kept, leaving out the IgG controls and the background. `var["modality"]` says whether a feature comes from cell painting, protein, cell shape, the IgG controls or the background. The zarr files hold Element's tables with an earlier QC flag, `pass_qc`, which is true for cells that pass and doesn't exclude mantispy's outliers.
 
 ## Checks on the biology
 
@@ -116,7 +116,7 @@ Wnt signalling is low in A549 cells, so the CTNNB1 and GSK3B knockouts have litt
 ```bash
 uv sync --group prep
 python prep.py Cytos-MPS_TNFa-CRISPR-Screen.zarr out
-pip install "mantispy @ git+https://github.com/scverse/mantispy.git@3552713"  # the version the h5ad files were made with
+pip install "mantispy==0.1.0a2"  # the published files were made with an earlier mantispy commit, then qc_pass was renamed to qc_fail
 python export_h5ad.py out/tables.zarr out/h5ad
 python split_wells.py out/full.zarr out/wells
 python checks/biology.py out/tables.zarr
