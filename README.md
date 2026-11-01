@@ -76,7 +76,7 @@ guides = ad.read_h5ad("guides.h5ad")
 cells = ~rna.obs["qc_fail"].values  # the same rows in all three files
 ```
 
-The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, builds a first joint embedding, and scores each representation on how well it separates TNFα-treated cells and each knockout from the non-targeting cells. It runs on a laptop in about 3 minutes and needs less than 4 GB of memory. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
+The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, builds a first joint embedding, and scores each representation on how well it separates TNFα-treated cells and each knockout from the non-targeting cells. With 100,000 cells it took 13 minutes on 4 CPUs and peaked at 7.7 GB of memory. Lower `N_CELLS` on a smaller laptop. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
 
 To run the notebook, install the packages it uses:
 
