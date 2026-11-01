@@ -361,7 +361,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -739,6 +739,7 @@ dependencies = [
 [package.dev-dependencies]
 prep = [
     { name = "ipykernel" },
+    { name = "mudata" },
     { name = "nbconvert" },
 ]
 
@@ -757,6 +758,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 prep = [
     { name = "ipykernel" },
+    { name = "mudata", specifier = ">=0.4.1" },
     { name = "nbconvert" },
 ]
 
@@ -2072,6 +2074,24 @@ wheels = [
 ]
 
 [[package]]
+name = "mudata"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anndata" },
+    { name = "h5py" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scipy" },
+    { name = "scverse-misc", extra = ["settings"] },
+    { name = "session-info2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d7/c7/2fcfe0908f94844e03a232b90a4fc44249642e787e3bf34d0fdf0a5e498f/mudata-0.4.1.tar.gz", hash = "sha256:41dba7f83b7caf66e070292c4a7429aecdc841c6e7931558175d6c2528ce7f3c", size = 472993, upload-time = "2026-08-17T11:40:30.453Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/d0/13860e6c8a06bb3fccc87e38966ed8ae98535aa44613b5fba0329ead0327/mudata-0.4.1-py3-none-any.whl", hash = "sha256:adcaeecec06aec0d7576f5f18ea474b530d661759d775dbed67fcb91fb3c4c41", size = 43919, upload-time = "2026-08-17T11:40:28.672Z" },
+]
+
+[[package]]
 name = "multidict"
 version = "7.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2653,7 +2673,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess" },
+    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [

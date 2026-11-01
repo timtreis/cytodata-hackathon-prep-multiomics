@@ -17,4 +17,8 @@ dependencies = [
 package = false
 
 [dependency-groups]
-prep = ["nbconvert", "ipykernel"]
+prep = [
+    "nbconvert",
+    "ipykernel",
+    "mudata>=0.4.1",
+]
