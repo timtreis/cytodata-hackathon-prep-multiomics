@@ -1,70 +1,123 @@
-# CytoData hackathon @ SBI2: Element Cytos multiomics CRISPR screen
+# SBI2 CytoData hackathon: multiomics dataset
 
-Pooled CRISPR screen in A549 cells. Cell painting, a protein panel, CRISPR guide identity and the 3' transcriptome are all read out from **the same cells** in situ on Element's AVITI24 (Direct In Sample Sequencing).
+The dataset is a pooled CRISPR screen of 258,896 A549 cells, measured with Element Biosciences' Cytos on the AVITI24. Each cell has cell painting images, four protein stains, its CRISPR guide and a 3' transcriptome, and because all of these measurements come from the same cell, the tables line up row for row.
 
-Source: [Element Biosciences, "Explore Multimodal Pooled Screening with Cytos"](https://www.elementbiosciences.com/resources/dataset-explore-multimodal-pooled-screening-on-aviti24). Public S3 download: `Cytos-MPS_TNFa-CRISPR-Screen.zarr.zip` (111 GB, SpatialData).
+Element Biosciences published the [original data](https://www.elementbiosciences.com/resources/dataset-explore-multimodal-pooled-screening-on-aviti24).
 
-## Design
+## Experimental design
 
-- A549 Cas9 (Cellecta) with a 28-guide library: CTNNB1, GSK3B, IL1R1, SMAD7, TGFBR2 and OR1I1 (4 guides each, OR1I1 is a cutting control with no expected phenotype), plus 4 non-targeting guides (`NTC`).
-- 12 wells: 6 baseline (A1, B1, C1, D2, E2, F2) and 6 with 30 min TNFα (A2, B2, C2, D1, E1, F1). About 21k cells per well, 258,896 cells in total.
-- Modalities:
-  - cell paint: mitochondria, membrane, nucleus, actin
-  - protein IF: pERK1/2, ERK1/2, pHSP27, p38, plus IgG controls
-  - 3' whole transcriptome
-  - guide reads
+- The cells are A549 cells that express Cas9. Element's metadata says HeLa, but the expression data show A549 (see Known issues).
+- Each cell carries one of 28 guides. There are 4 guides each against CTNNB1, GSK3B, IL1R1, SMAD7 and TGFBR2, 4 against OR1I1, which A549 cells don't express and which controls for the effect of cutting, and 4 non-targeting guides (`NTC`).
+- Six wells are untreated (A1, B1, C1, D2, E2, F2), and six wells were treated with TNFα for 30 minutes (A2, B2, C2, D1, E1, F1).
 
-## Tiers
+## Download
 
-| Tier | Contents | Size |
+| File | Contents | Size |
 |---|---|---|
-| `full` | Everything: images, cell + nuclear masks, transcript points, tables | 104 GB |
-| `subset_A1_A2` | One baseline (A1) and one TNFα well (A2), all elements | 17 GB |
-| `tables` | Tables only, no images | 1.5 GB |
+| `rna.h5ad` | RNA counts for 54,949 genes | 0.7 GB |
+| `imaging.h5ad` | 1,131 cell painting, protein and shape features | 1.6 GB |
+| `guides.h5ad` | Guide counts for 28 guides | 0.04 GB |
+| `subset_A1_A2.zarr.zip` | Wells A1 and A2 with images, masks and transcript locations (SpatialData) | 17 GB |
+| `full_<well>.zarr.zip` | One file per well (`full_A1` to `full_F2`) with images, masks and transcript locations (SpatialData) | 8.8 to 9.6 GB each |
 
-Open any tier with `spatialdata.read_zarr(...)`.
-
-## Tables
-
-The four cell tables have the same rows, in the same order. Cells are linked to the `<well>-labels-Cell` masks through `region_key` / `Cell`.
-
-| Table | `X` |
-|---|---|
-| `global-table-ThreePrimeUntargeted` | RNA counts (54,949 genes; nuclear counts in `layers["nuclear"]`) |
-| `global-table-imaging` | 1,150 intensity/morphology features (cell paint + protein). `*_NuclearRatio` features are NaN for up to 14% of cells: drop or impute them. |
-| `global-table-B01-Cellecta` | guide counts (28 guides) |
-| `global-table-B01-QC_Panel` | targeted GAPDH/ACTB control probes |
-| `global-table-metadata` | run-level stats in `uns` |
-
-Columns added to `obs` of every cell table:
-
-- `condition`: `baseline` or `TNFa`.
-- `guide`, `target_gene`, `guide_confidence`: Element's most abundant guide per cell and its share of guide reads.
-- `guide_assigned`: confidence > 0.5. This reproduces Element's reported 87% assignment rate.
-- `rna_total_counts`, `rna_n_genes`, `rna_pct_mt`.
-- QC flags (nothing is removed):
-  - `qc_low_rna`: fewer than 200 RNA counts.
-  - `qc_guide_unassigned`
-  - `qc_spatial_artifact`: Element's per-cell artifact call across any modality.
-  - `qc_imaging_nan`
-  - `qc_no_nucleus`
-- `pass_qc`: no QC flag set.
-
-## Cell line note
-
-Element's well metadata lists `cell_type = HELA`, but the dataset page says A549. The expression data agree with A549:
-
-- **Male:** Y-chromosome genes are expressed (RPS4Y1, EIF1AY, DDX3Y) and XIST is absent. HeLa is female.
-- **KEAP1-mutant NRF2 program:** very high NQO1, AKR1C1/2/3, AKR1B10, ALDH3A1 and ALDH1A1.
-- **CDKN2A absent:** deleted in A549. HeLa expresses p16 strongly because of HPV E7.
-
-We set `cell_type` to `A549` and kept Element's value in `cell_type_original`.
-
-## Reproduce
+Most analyses only need the three `.h5ad` files. You only need the zarr files if you want to work with the images.
 
 ```bash
-uv sync
-python prep.py <unzipped .zarr> <out dir>
+URL=https://exampledata.scverse.org/sbi2-cytodata/multiomics
+for f in rna.h5ad imaging.h5ad guides.h5ad; do curl -O $URL/$f; done
+shasum -a 256 -c <<EOF
+a570888a00a0a98fd7b47ebace10f576fb04775b44732159ff419a81710bd293  rna.h5ad
+045854ba23a19bccb89615ab215ea9db92bd76050425ee3cdcbd31b115a652b4  imaging.h5ad
+add7668236e6fab989315851c11d578d9db49c935d9b06ea4363c46bd06bc618  guides.h5ad
+EOF
 ```
 
-Processing reference: [Elembio/cytoprofiling](https://github.com/Elembio/cytoprofiling).
+Or in Python, with pooch, which also checks each file against its checksum:
+
+```python
+import pooch
+
+URL = "https://exampledata.scverse.org/sbi2-cytodata/multiomics"
+SHA256 = {
+    "rna.h5ad": "a570888a00a0a98fd7b47ebace10f576fb04775b44732159ff419a81710bd293",
+    "imaging.h5ad": "045854ba23a19bccb89615ab215ea9db92bd76050425ee3cdcbd31b115a652b4",
+    "guides.h5ad": "add7668236e6fab989315851c11d578d9db49c935d9b06ea4363c46bd06bc618",
+}
+for name, sha in SHA256.items():
+    pooch.retrieve(f"{URL}/{name}", known_hash=f"sha256:{sha}", fname=name, path="data")
+```
+
+The CDN blocks the default user agent of Python's urllib, so use curl, wget, requests or pooch instead.
+
+The zarr files are at the same URL, e.g. `curl -O $URL/full_B2.zarr.zip` for well B2. Their sha256 checksums are:
+
+```
+bfa0442ec3183fc379f711a89f65487c10d96119340a92fb184180c539280317  subset_A1_A2.zarr.zip
+16ff5051e595b9d96891b9efd05d8a5e1942b090d5b8710ca87226417adff1da  full_A1.zarr.zip
+9a32b79ea46a7db2caeb66940a12ed909aed62d59f1c785c0db1b4460f7b75b0  full_A2.zarr.zip
+287d91d0fd7a00fe8ba92395cea902332fbba1bb96889659b45a46f18a24f80e  full_B1.zarr.zip
+001c757a4946eda97bede539c616e8241853cdbde82889653591ca2db94707be  full_B2.zarr.zip
+3839173bc68be210869c4179f090f62c4da986b3d81d05ea63d123b80ccc74d9  full_C1.zarr.zip
+93a2bedf5a4d5a295798be9b932df39924a454dd25374c5291c2586b537e0567  full_C2.zarr.zip
+21cc889de09b6d56dfeac8bf98bbbae3e0bb7ccff927676c0bb9a31dddf63a39  full_D1.zarr.zip
+3ab0fd284ce8d70f075913995b142694648a9f817ff8a9a8a0e5bbf392523b50  full_D2.zarr.zip
+52ee000ba873b506b4ce35685300626e00d13b1865d5ee900d51fb64629c12c4  full_E1.zarr.zip
+add56e9d6a7ee2b8b8cd7da34c1ad7aa872462a1f58eb492efc14d1cc1b5ccea  full_E2.zarr.zip
+87c2ac200b341ef6fe38f94e3d208292a726671d65fd4419502ab021b6848f85  full_F1.zarr.zip
+e06676e7b8d054e2afb132cf579d4251e4abf7cebc34ae3838bdf5fdbba77fff  full_F2.zarr.zip
+```
+
+```python
+import anndata as ad
+
+rna = ad.read_h5ad("rna.h5ad")
+imaging = ad.read_h5ad("imaging.h5ad")
+guides = ad.read_h5ad("guides.h5ad")
+cells = ~rna.obs["qc_fail"].values  # the same rows in all three files
+```
+
+The notebook `notebooks/01_starter.ipynb` downloads the h5ad files, joins the modalities, builds a first joint embedding, and scores each representation on how well it separates TNFα-treated cells and each knockout from the non-targeting cells. With 100,000 cells it took 13 minutes on 4 CPUs and peaked at 7.7 GB of memory. Lower `N_CELLS` on a smaller laptop. You can open the zarr files with `spatialdata.read_zarr` after unzipping them.
+
+To run the notebook, install the packages it uses:
+
+```bash
+pip install anndata scanpy scikit-learn matplotlib pooch "mantispy[map]>=0.1.0a2"
+```
+
+## Contents of the h5ad files
+
+The three files share the same rows and the same `obs`, and we didn't remove any cells. The main `obs` columns are:
+
+- `condition` (`baseline` or `TNFa`), `Well`, `guide`, `target_gene` (`NTC` for non-targeting guides, `Undetermined` when no guide was called) and `guide_confidence`
+- `guide_assigned`, which is true when the guide confidence is above 0.5. With that cutoff, 87% of cells have a guide, which matches Element's number.
+- The QC flags, which are true for cells with a problem: `qc_low_rna` (fewer than 200 RNA counts), `qc_guide_unassigned`, `qc_spatial_artifact`, `qc_imaging_nan`, `qc_no_nucleus`, and mantispy's `qc_area_outlier` and `qc_outlier`
+- `qc_fail`, which is true when any of the QC flags is set. 79.6% of cells pass, and `mt.pp.filter_cells` drops the others.
+
+We processed `imaging.h5ad` with [mantispy](https://github.com/scverse/mantispy). `X` holds robust z-scores against all non-targeting cells, the raw values are in `layers["raw"]`, and `var["selected"]` marks the 369 features that mantispy's feature selection kept, leaving out the IgG controls and the background. `var["modality"]` says whether a feature comes from cell painting, protein, cell shape, the IgG controls or the background. The zarr files hold Element's tables with an earlier QC flag, `pass_qc`, which is true for cells that pass and doesn't exclude mantispy's outliers.
+
+## Checks on the biology
+
+We ran `checks/biology.py` to make sure the guide and treatment labels are correct, and the results match the known biology:
+
+- Each knockout lowers the mRNA of its target gene, except for SMAD7 and OR1I1.
+- The TGFBR2 knockout lowers TGF-β target genes such as PMEPA1 and TGFBI.
+- TNFα raises NF-κB target genes such as CXCL8, NFKBIA and TNFAIP3, and it raises phosphorylated HSP27.
+
+Wnt signalling is low in A549 cells, so the CTNNB1 and GSK3B knockouts have little effect.
+
+## Known issues
+
+- Each well is either untreated or treated, so the condition is confounded with the well. Use `Well` as a covariate rather than normalising it away, because normalising per well removes the TNFα response.
+- The `*_NuclearRatio` imaging features are missing for up to 14% of cells.
+- Element's metadata lists the cells as HeLa, but the data show they are A549. The cells express Y chromosome genes, they have high NRF2 target expression, and they don't express CDKN2A, and all of these fit A549 but not HeLa.
+
+## Reproduce the files
+
+```bash
+uv sync --group prep
+python prep.py Cytos-MPS_TNFa-CRISPR-Screen.zarr out
+pip install "mantispy==0.1.0a2"  # the published files were made with an earlier mantispy commit, then qc_pass was renamed to qc_fail
+python export_h5ad.py out/tables.zarr out/h5ad
+python split_wells.py out/full.zarr out/wells
+python checks/biology.py out/tables.zarr
+```
