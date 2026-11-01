@@ -7,3 +7,4 @@ data/
 *.h5ad
 .venv/
 __pycache__/
+cache/
